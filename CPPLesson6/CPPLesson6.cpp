@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <list>
 
 using namespace std;
 
@@ -40,6 +41,25 @@ class Train
 
 };
 
+class CityMassive
+{
+private: 
+    map <int,City> cities;
+public:
+    CityMassive(City cmassive[]) {
+        for (int i = 0; i < 5; i++)
+        {
+            cities[i] = cmassive[i];
+        }
+    }
+
+    void display() 
+    {
+        for (auto& city : cities)
+           cout << city.second;
+    }
+
+};
 
 class City
 {
@@ -64,10 +84,98 @@ public:
             out << kv.second << ":" << kv.first << "км\n" ;       
         return out;
     }
+
+
+
+    int getCityID()
+    {
+        return id;
+    }
+    string getCityName()
+    {
+        return name;
+    }
+    int getCitiesDistance(string name) 
+    {
+        int distance = 0;
+        for (auto& kv : cities)
+            if (kv.second == name) distance = kv.first;
+        return distance;
+    }
+    list<string> getCitiesRoute() 
+    {
+        list<string> buflist;
+        for (auto& kv : cities)
+            buflist.push_back(kv.second);
+        return buflist;
+    }
 };
 
 class Path
 {
+private:
+    int distanceToNeedCity = 0;
+    Human human;
+    City currentCity;
+    City destinationCity;
+
+    void setDistance(int value)
+    {
+        distanceToNeedCity = value;
+    }
+public:
+    Path(Human h, City cc, City dc) : human{ h }, currentCity{ cc }, destinationCity{ dc } {}
+
+    void findPaths(City MCity[])
+    {        
+        list<string> findedCities2;
+        list<string> findedCities;
+        int bufId;
+        string destName = destinationCity.getCityName();
+        for (int i = 0; i < 5; i++)
+        {            
+            if (MCity[i].getCityName() == currentCity.getCityName())
+            {
+                bufId = MCity[i].getCityID();
+                findedCities = MCity[i].getCitiesRoute();
+
+                for (auto& cityname : findedCities)
+                    if (cityname == destName)
+                    {
+                       setDistance(currentCity.getCitiesDistance(cityname));
+                    }
+                if (!distanceToNeedCity)
+                {
+                    for (auto& cityname : findedCities)
+                        if (cityname == destName)
+                        {
+                            findedCities2 = MCity[i].getCitiesRoute();
+                        }
+                }
+
+            }
+        }
+
+
+        /*
+        Проверяем список городов на наличие городов доступных из CurrentCity
+        Получить города которые доступные из городов связанных с CurrentCity // NN, Bryansk
+        Проверить является ли полученные города точкой назначения
+           Если да то возвращаем путь
+        Проверяем список городов на наличие городов доступных из CurrentCity
+        Получить города которые доступные из городов связанных с CurrentCity // NN, Bryansk
+        Проверить является ли полученные города точкой назначения
+           Если да то возвращаем путь
+        
+        
+        
+        */
+    } 
+
+    void displayPath()
+    {
+        cout << distanceToNeedCity << "км\n";
+    }
 
 };
 
@@ -77,14 +185,19 @@ int main()
 {
     setlocale(LC_ALL, "");    
     City Moskva{ 0,"Москва",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Тверь", "Нижний Новгород", "Ярославль","Казань"} };
-    City NN{ 0,"Нижний Новгород",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Тверь", "Нижний Новгород", "Ярославль","Казань"} };
-    City Voronezh{ 0,"Воронеж",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Тверь", "Нижний Новгород", "Ярославль","Казань"} };
-    City Rostov{ 0,"Ростов",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Тверь", "Нижний Новгород", "Ярославль","Шахты"} };
-    City Brynsk{ 0,"Брянск",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Тверь", "Нижний Новгород", "Ярославль","Казань"} };
+    City NN{ 0,"Нижний Новгород",new int[5] {200,300,400,500,600},new string[5]{"Муром", "Ульяновск", "Арзамас", "Ярославль","Казань"} };
+    City Voronezh{ 0,"Воронеж",new int[5] {200,300,400,500,600},new string[5]{"Брянск", "Белгород", "Ростов", "Волгоград","Саратов"} };
+    City Rostov{ 0,"Ростов",new int[5] {200,300,400,500,600},new string[5]{"Краснодар", "Волгоград", "Воронеж", "Харьков","Шахты"} };
+    City Brynsk{ 0,"Брянск",new int[5] {200,300,400,500,600},new string[5]{"Москва", "Воронеж", "Смоленск", "Гомель","Тула"} };
 
     City goroda[]{ Moskva,NN,Voronezh,Rostov,Brynsk };
-
-    cout << goroda[0];
+    CityMassive cm(goroda);
+    
+    Human ivan("Ivan","Ivanov",20000.0,24);
+    Path moskvavoronezh(ivan, Moskva, Voronezh);
+    moskvavoronezh.findPaths(goroda);
+    moskvavoronezh.displayPath();
+    cm.display();
 
     return 0;
 }

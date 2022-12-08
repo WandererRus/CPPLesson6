@@ -8,7 +8,16 @@ using namespace std;
 
 class Human
 {
+private: 
+    string name;
+    string surname;
+    double money;
+    int time;
+public:
+    Human() : name{ "John" }, surname{ "Smith" }, money{ 15000.0 }, time{ 20 } {}
 
+    Human(string n, string s, double m, int t) : name{ n }, surname{ s }, money{ m }, time{ t } {}
+    
 };
 
 class Aircraft
@@ -75,7 +84,7 @@ int main()
 
     City goroda[]{ Moskva,NN,Voronezh,Rostov,Brynsk };
 
-    cout << goroda;
+    cout << goroda[0];
 
     return 0;
 }
